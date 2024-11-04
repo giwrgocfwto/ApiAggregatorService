@@ -1,4 +1,5 @@
 using ApiAggregatorService.Services;
+using ApiAggregatorService.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

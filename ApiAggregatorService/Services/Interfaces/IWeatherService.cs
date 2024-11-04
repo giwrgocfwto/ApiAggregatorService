@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ApiAggregatorService.Models;
 
-namespace ApiAggregatorService.Services
+namespace ApiAggregatorService.Services.Interfaces
 {
     public interface IWeatherService
     {
