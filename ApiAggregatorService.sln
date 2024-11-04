@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregatorService", "ApiAggregatorService\ApiAggregatorService.csproj", "{ADC1AFD7-B834-4705-9CAA-46B68CEABB10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregatorService.Tests", "ApiAggregatorService.Tests\ApiAggregatorService.Tests.csproj", "{54F9692A-BFB4-466A-A45E-CC4B3857AF0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{ADC1AFD7-B834-4705-9CAA-46B68CEABB10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADC1AFD7-B834-4705-9CAA-46B68CEABB10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADC1AFD7-B834-4705-9CAA-46B68CEABB10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F9692A-BFB4-466A-A45E-CC4B3857AF0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F9692A-BFB4-466A-A45E-CC4B3857AF0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F9692A-BFB4-466A-A45E-CC4B3857AF0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F9692A-BFB4-466A-A45E-CC4B3857AF0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

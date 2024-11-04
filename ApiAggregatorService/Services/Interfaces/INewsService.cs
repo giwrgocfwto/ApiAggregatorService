@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using ApiAggregatorService.Models;
+﻿using ApiAggregatorService.Models;
 
 namespace ApiAggregatorService.Services.Interfaces
 {

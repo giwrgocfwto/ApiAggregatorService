@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using ApiAggregatorService.Models;
+﻿using ApiAggregatorService.Models;
 using ApiAggregatorService.Models.Responses;
 using ApiAggregatorService.Services.Interfaces;
 using Newtonsoft.Json;

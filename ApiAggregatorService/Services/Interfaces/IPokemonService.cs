@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ApiAggregatorService.Models;
+﻿using ApiAggregatorService.Models;
 
 public interface IPokemonService
 {

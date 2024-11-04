@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using ApiAggregatorService.Models;
 using ApiAggregatorService.Services.Interfaces;
 
 namespace ApiAggregatorService.Controllers

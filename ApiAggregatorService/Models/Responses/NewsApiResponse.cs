@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ApiAggregatorService.Models.Responses
+﻿namespace ApiAggregatorService.Models.Responses
 {
     public class NewsApiResponse
     {
