@@ -14,7 +14,7 @@ namespace ApiAggregatorService.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<NewsData>> GetNewsAsync(string keyword)
+        public async Task<List<NewsData>> GetNewsAsync(string keyword, string sortBy = null, string filterBy = null)
         {
             var apiKey = "140cd018eaf64dc9b16210dab3ca1fda";
             var encodedKeyword = Uri.EscapeDataString(keyword);
@@ -36,8 +36,21 @@ namespace ApiAggregatorService.Services
 
                 var content = await response.Content.ReadAsStringAsync();
                 var newsApiResponse = JsonConvert.DeserializeObject<NewsApiResponse>(content);
+                var newsData = newsApiResponse?.Articles;
 
-                return newsApiResponse?.Articles; // Return the list of articles
+                // Apply filtering if needed
+                if (!string.IsNullOrEmpty(filterBy))
+                {
+                    newsData = ApplyNewsFiltering(newsData, filterBy);
+                }
+
+                // Apply sorting if needed
+                if (!string.IsNullOrEmpty(sortBy))
+                {
+                    newsData = ApplyNewsSorting(newsData, sortBy);
+                }
+
+                return newsData;
             }
             catch (Exception ex)
             {
@@ -46,6 +59,23 @@ namespace ApiAggregatorService.Services
             }
         }
 
+        private List<NewsData> ApplyNewsSorting(List<NewsData> newsData, string sortBy)
+        {
+            return sortBy switch
+            {
+                "date" => newsData.OrderBy(item => DateTime.Parse(item.PublishedAt)).ToList(), // Ascending because default seems to be descending
+                "title" => newsData.OrderBy(item => item.Title).ToList(),
+                "description" => newsData.OrderBy(item => item.Description).ToList(),
+                _ => newsData // Default to unsorted if sortBy is not recognized
+            };
+        }
 
+        private List<NewsData> ApplyNewsFiltering(List<NewsData> newsData, string filterBy)
+        {
+            return newsData.Where(item =>
+                item.Title.Contains(filterBy, StringComparison.OrdinalIgnoreCase) ||
+                item.Description.Contains(filterBy, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
     }
 }

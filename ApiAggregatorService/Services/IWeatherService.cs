@@ -5,6 +5,6 @@ namespace ApiAggregatorService.Services
 {
     public interface IWeatherService
     {
-        Task<WeatherData> GetWeatherAsync(string location);
+        Task<List<WeatherData>> GetWeatherAsync(string location, string sortBy = null, string filterBy = null);
     }
 }
