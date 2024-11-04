@@ -33,12 +33,12 @@ namespace ApiAggregatorService.Services
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"Failed to fetch news data. Status: {response.StatusCode}, Reason: {response.ReasonPhrase}, Details: {errorContent}");
-                    return null;
+                    return new List<NewsData>(); // Fallback to an empty list if the API call fails
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
                 var newsApiResponse = JsonConvert.DeserializeObject<NewsApiResponse>(content);
-                var newsData = newsApiResponse?.Articles;
+                var newsData = newsApiResponse?.Articles ?? new List<NewsData>();
 
                 // Apply filtering if needed
                 if (!string.IsNullOrEmpty(filterBy))
@@ -56,10 +56,11 @@ namespace ApiAggregatorService.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Request failed: {ex.Message}");
-                return null;
+                Console.WriteLine($"Error fetching news data: {ex.Message}");
+                return new List<NewsData>(); // Fallback to an empty list in case of an exception
             }
         }
+
 
         private List<NewsData> ApplyNewsSorting(List<NewsData> newsData, string sortBy)
         {

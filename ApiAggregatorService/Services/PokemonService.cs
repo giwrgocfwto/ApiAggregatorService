@@ -17,61 +17,54 @@ public class PokemonService : IPokemonService
 
     public async Task<List<PokemonData>> GetPokemonByTypesAsync(string primaryType, string secondaryType = null, string sortBy = null)
     {
-        // Step 1: Fetch all Pokémon for the primary type
-        var primaryUrl = $"https://pokeapi.co/api/v2/type/{primaryType.ToLower()}";
-        var primaryResponse = await _httpClient.GetStringAsync(primaryUrl);
-        var primaryTypeData = JsonConvert.DeserializeObject<PokemonTypeResponse>(primaryResponse);
-
-        // Step 2: If a secondary type is specified, fetch all Pokémon for that type and use a HashSet for fast lookup
-        HashSet<string> secondaryTypePokemonUrls = null;
-        if (!string.IsNullOrEmpty(secondaryType))
+        try
         {
-            var secondaryUrl = $"https://pokeapi.co/api/v2/type/{secondaryType.ToLower()}";
-            var secondaryResponse = await _httpClient.GetStringAsync(secondaryUrl);
-            var secondaryTypeData = JsonConvert.DeserializeObject<PokemonTypeResponse>(secondaryResponse);
+            // Step 1: Fetch all Pokémon for the primary type
+            var primaryUrl = $"https://pokeapi.co/api/v2/type/{primaryType.ToLower()}";
+            var primaryResponse = await _httpClient.GetStringAsync(primaryUrl);
+            var primaryTypeData = JsonConvert.DeserializeObject<PokemonTypeResponse>(primaryResponse);
 
-            secondaryTypePokemonUrls = new HashSet<string>(secondaryTypeData.Pokemon.Select(p => p.Pokemon.Url));
-        }
-
-        // Step 3: Filter primary type Pokémon by checking against the secondary type list (if provided), and keep only names and URLs
-        var filteredPokemonEntries = primaryTypeData.Pokemon
-            .Where(entry => secondaryTypePokemonUrls == null || secondaryTypePokemonUrls.Contains(entry.Pokemon.Url))
-            .Select(entry => new { entry.Pokemon.Name, entry.Pokemon.Url })
-            .ToList();
-
-        // Step 4: Sort the filtered list based on the selected criteria (name or ID)
-        filteredPokemonEntries = sortBy switch
-        {
-            "name" => filteredPokemonEntries.OrderBy(p => p.Name).ToList(),
-            "id" => filteredPokemonEntries.OrderBy(p => p.Url).ToList(), // Assuming URL contains ID as a unique part
-            _ => filteredPokemonEntries
-        };
-
-        // Step 5: Limit to top 10 after sorting
-        var top10PokemonEntries = filteredPokemonEntries.Take(10).ToList();
-
-        // Step 6: Fetch detailed data only for these top 10 Pokémon
-        var pokemons = new List<PokemonData>();
-        foreach (var entry in top10PokemonEntries)
-        {
-            var pokemonResponse = await _httpClient.GetStringAsync(entry.Url);
-            var dynamicPokemonData = JsonConvert.DeserializeObject<dynamic>(pokemonResponse);
-
-            var typeNames = ((IEnumerable<dynamic>)dynamicPokemonData.types)
-                .Select(t => (string)t.type.name)
-                .ToList();
-
-            pokemons.Add(new PokemonData
+            HashSet<string> secondaryTypePokemonUrls = null;
+            if (!string.IsNullOrEmpty(secondaryType))
             {
-                Id = (int)dynamicPokemonData.id,
-                Name = (string)dynamicPokemonData.name,
-                Types = typeNames,
-                Height = (int)dynamicPokemonData.height,
-                Weight = (int)dynamicPokemonData.weight
-            });
-        }
+                var secondaryUrl = $"https://pokeapi.co/api/v2/type/{secondaryType.ToLower()}";
+                var secondaryResponse = await _httpClient.GetStringAsync(secondaryUrl);
+                var secondaryTypeData = JsonConvert.DeserializeObject<PokemonTypeResponse>(secondaryResponse);
 
-        return pokemons;
+                secondaryTypePokemonUrls = new HashSet<string>(secondaryTypeData.Pokemon.Select(p => p.Pokemon.Url));
+            }
+
+            var matchingPokemons = new List<PokemonData>();
+
+            foreach (var entry in primaryTypeData.Pokemon ?? Enumerable.Empty<PokemonEntry>())
+            {
+                if (secondaryTypePokemonUrls == null || secondaryTypePokemonUrls.Contains(entry.Pokemon.Url))
+                {
+                    var pokemonResponse = await _httpClient.GetStringAsync(entry.Pokemon.Url);
+                    var dynamicPokemonData = JsonConvert.DeserializeObject<dynamic>(pokemonResponse);
+
+                    var typeNames = ((IEnumerable<dynamic>)dynamicPokemonData.types).Select(t => (string)t.type.name).ToList();
+
+                    matchingPokemons.Add(new PokemonData
+                    {
+                        Id = (int)dynamicPokemonData.id,
+                        Name = (string)dynamicPokemonData.name,
+                        Types = typeNames,
+                        Height = (int)dynamicPokemonData.height,
+                        Weight = (int)dynamicPokemonData.weight
+                    });
+                }
+            }
+
+            var sortedPokemons = ApplySorting(matchingPokemons, sortBy);
+            return sortedPokemons.Take(10).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching Pokémon data: {ex.Message}");
+            // Fallback response: return an empty list or default message
+            return new List<PokemonData>(); // or custom fallback data
+        }
     }
 
     private List<PokemonData> ApplySorting(List<PokemonData> pokemons, string sortBy)

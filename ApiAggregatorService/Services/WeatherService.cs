@@ -33,7 +33,15 @@ namespace ApiAggregatorService.Services
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"Failed to fetch weather data. Status: {response.StatusCode}, Reason: {response.ReasonPhrase}, Details: {errorContent}");
-                    return null;
+                    return new List<WeatherData> // Fallback to default values
+                    {
+                        new WeatherData
+                        {
+                            City = location,
+                            Temperature = 0,
+                            Condition = "Unavailable"
+                        }
+                    };
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
@@ -44,9 +52,9 @@ namespace ApiAggregatorService.Services
                 {
                     new WeatherData
                     {
-                        City = apiResponse.Name,
-                        Temperature = apiResponse.Main.Temp,
-                        Condition = apiResponse.Weather.FirstOrDefault()?.Description
+                        City = apiResponse?.Name ?? location,
+                        Temperature = apiResponse?.Main.Temp ?? 0,
+                        Condition = apiResponse?.Weather.FirstOrDefault()?.Description ?? "Unknown"
                     }
                 };
 
@@ -66,10 +74,19 @@ namespace ApiAggregatorService.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Request failed: {ex.Message}");
-                return null;
+                Console.WriteLine($"Error fetching weather data: {ex.Message}");
+                return new List<WeatherData> // Fallback to default values in case of an exception
+                {
+                    new WeatherData
+                    {
+                        City = location,
+                        Temperature = 0,
+                        Condition = "Unavailable"
+                    }
+                };
             }
         }
+
 
         private List<WeatherData> ApplyWeatherSorting(List<WeatherData> weatherData, string sortBy) // Not needed though
         {
