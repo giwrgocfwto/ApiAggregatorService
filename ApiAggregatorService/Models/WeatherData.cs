@@ -6,5 +6,4 @@
         public float Temperature { get; set; }
         public string Condition { get; set; }
     }
-
 }

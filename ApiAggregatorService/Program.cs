@@ -10,6 +10,7 @@ builder.Services.AddSwaggerGen();
 // Register your custom services here
 builder.Services.AddHttpClient<IWeatherService, WeatherService>();
 builder.Services.AddHttpClient<INewsService, NewsService>();
+builder.Services.AddHttpClient<IPokemonService, PokemonService>();
 
 var app = builder.Build();
 

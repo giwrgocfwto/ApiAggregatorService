@@ -11,11 +11,13 @@ namespace ApiAggregatorService.Controllers
     {
         private readonly IWeatherService _weatherService;
         private readonly INewsService _newsService;
+        private readonly IPokemonService _pokemonService;
 
-        public AggregationController(IWeatherService weatherService, INewsService newsService)
+        public AggregationController(IWeatherService weatherService, INewsService newsService, IPokemonService pokemonService)
         {
             _weatherService = weatherService;
             _newsService = newsService;
+            _pokemonService = pokemonService;
         }
 
         // Separate endpoint for weather data
@@ -32,8 +34,6 @@ namespace ApiAggregatorService.Controllers
             return Ok(weatherData);
         }
 
-
-        // Separate endpoint for news data
         [HttpGet("news")]
         public async Task<IActionResult> GetNewsData(string keyword, string sortBy = null, string filterBy = null)
         {
@@ -47,5 +47,17 @@ namespace ApiAggregatorService.Controllers
             return Ok(newsData);
         }
 
+        [HttpGet("pokemon")]
+        public async Task<IActionResult> GetPokemonByTypes(string primaryType, string secondaryType = null, string sortBy = null)
+        {
+            var pokemons = await _pokemonService.GetPokemonByTypesAsync(primaryType, secondaryType, sortBy);
+
+            if (pokemons == null || !pokemons.Any())
+            {
+                return NotFound("No Pokémon found with the specified types.");
+            }
+
+            return Ok(pokemons);
+        }
     }
 }

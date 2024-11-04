@@ -86,6 +86,5 @@ namespace ApiAggregatorService.Services
                 item.City.Contains(filterBy, StringComparison.OrdinalIgnoreCase)
             ).ToList();
         }
-
     }
 }
